@@ -1,22 +1,13 @@
-import React from 'react';
-import {Text, View, ScrollView, SafeAreaView, SectionList, FlatList} from 'react-native';
-import styled from 'styled-components/native';
+import React from 'react'
+import { NavigationContainer } from '@react-navigation/native';;
+import {createNativeStackNavigator} from '@react-navigation/native-stack'
+import {Text, ScrollView, TouchableOpacity,  FlatList  } from 'react-native'
+import Main from './components/main'
 
-// @ts-ignore
-const Element = styled.View`
-  background-color: ${( { mainColor } ) => mainColor};
-  align-items:center;
-  padding:16px;
-  font-size:16px;
-  font-weight:bold;
-  border-radius:4px;
-  margin:4px;
-  & *{
-    color:white
-  }
-`;
+import styled from 'styled-components';
 
-const colorful = [
+
+  const SOLARIZED = [
     { colorName: 'Base03', hexCode: '#002b36' },
     { colorName: 'Base02', hexCode: '#073642' },
     { colorName: 'Base01', hexCode: '#586e75' },
@@ -33,30 +24,104 @@ const colorful = [
     { colorName: 'Blue', hexCode: '#268bd2' },
     { colorName: 'Cyan', hexCode: '#2aa198' },
     { colorName: 'Green', hexCode: '#859900' },
-];
-const App = () =>
-{
-  // console.warn(colorful)
-  return (
-    <SafeAreaView>
-      <Text>Here are the colours I used</Text>
-      {
-        <FlatList
-          data={ colorful }
-          keyExtractor={ ( item ) => item.colorName }
-          renderItem={ ( { item } ) => ( <Element mainColor={ item.hexCode }>
-            <Text style={ parseInt( item.hexCode.replace( '#', '' ), 16 ) > 0xffffff / 1.1 ?  { 'color': 'black' }:{ 'color': 'white' } }>
-              { item.colorName + " " + item.hexCode }
-            </Text>
-          </Element> ) }
-          
-          ListEmptyComponent={<Text>BYE</Text>}
-        ></FlatList>
-      }
+  ];
+  const RAINBOW = [
+    { colorName: 'Red', hexCode: '#FF0000' },
+    { colorName: 'Orange', hexCode: '#FF7F00' },
+    { colorName: 'Yellow', hexCode: '#FFFF00' },
+    { colorName: 'Green', hexCode: '#00FF00' },
+    { colorName: 'Violet', hexCode: '#8B00FF' },
+  ];
 
-      
-    </SafeAreaView>
+  const FRONTEND_MASTERS = [
+    { colorName: 'Red', hexCode: '#c02d28' },
+    { colorName: 'Black', hexCode: '#3e3e3e' },
+    { colorName: 'Grey', hexCode: '#8a8a8a' },
+    { colorName: 'White', hexCode: '#ffffff' },
+    { colorName: 'Orange', hexCode: '#e66225' },
+  ];
+  const COLOR_PALETTES = [
+    { paletteName: 'Solarized', colors: SOLARIZED },
+    { paletteName: 'Frontend Masters', colors: FRONTEND_MASTERS },
+    { paletteName: 'Rainbow', colors: RAINBOW },
+  ];
+
+
+
+const Home = ( { navigation } ) =>
+{
+    const Rectangle = styled.View`
+    width: 25px;
+    height: 25px;
+    background-color: ${( { color } ) => color };
+    margin: 0px 5px;    
+    `
+  
+  return   <FlatList
+      data={ COLOR_PALETTES }
+      keyExtractor={ ( item ) => item.colors +item.paletteName }
+      renderItem={ ( { item } ) =>
+    {
+      // console.log( item );
+        return <ScrollView>
+          <TouchableOpacity onPress={ () => navigation.navigate( 'ColorPalette', { paletteName: item.paletteName, colors: item.colors } ) }>
+            <Text>{ item.paletteName }</Text>
+          </TouchableOpacity>
+          <FlatList
+          data={ item.colors.slice(0,5) }
+          keyExtractor={ item => item.colorName }
+          renderItem={ ( { item } ) => <Rectangle color={ item.hexCode } /> }
+          numColumns={5}
+        ></FlatList> 
+        </ScrollView> 
+    } }
+    ></FlatList>
+}
+//  <FlatList
+//           data={ item.colors.slice(0,5) }
+//           keyExtractor={ item => item.colorName }
+//           renderItem={ ( { item } ) => <Rectangle color={ item.hexCode } /> }
+//           numColumns={5}
+//         ></FlatList> 
+
+const ColorPalette = ( { navigation, route } ) =>
+{
+  console.log( route.params.colors )
+  const ColorItem = styled.View`
+    
+    margin: 6px;
+    padding: 6px;
+    border-radius: 2px;
+    background-color: ${( { bg } ) => bg} ;
+    align-items: center;
+    justify-content: center;
+  `
+  const TextItem = styled.Text`
+    align-items: center;
+    justify-content: center;
+  `
+  return <FlatList
+    data={ route.params.colors }
+    keyExtractor={ ( item ) => item.hexCode }
+    renderItem={ ( { item } ) => <ColorItem bg={ item.hexCode }><TextItem>{item.colorName }</TextItem></ColorItem>}
+  ></FlatList>
+ }
+
+
+
+
+const App = () =>{
+ const Stack = createNativeStackNavigator()
+  return (
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName='Home'>
+        <Stack.Screen name="Home" component={Home}/>
+        <Stack.Screen name='ColorPalette' component={ ColorPalette } options={ ( { route } ) =>({ title: route.params.paletteName })}/>
+      </Stack.Navigator>
+
+    </NavigationContainer>
   );
 };
+
 
 export default App;
