@@ -1,9 +1,9 @@
-import React from 'react';
-import {Text, View, ScrollView, SafeAreaView, SectionList, FlatList, Button} from 'react-native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-const Stack = createNativeStackNavigator();
-import HomeScreen from '../home'
-import App from '../colormania'
+import React,{useEffect, useCallback, useState} from 'react'
+import { NavigationContainer } from '@react-navigation/native';;
+import {createNativeStackNavigator} from '@react-navigation/native-stack'
+import {Text, ScrollView, TouchableOpacity,  FlatList  } from 'react-native'
+
+import styled from 'styled-components';
 
 
 
